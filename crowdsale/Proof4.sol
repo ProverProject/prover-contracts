@@ -55,15 +55,13 @@ contract BaseERC20 {
 
 contract ManualMigration is owned {
 
-    address                      public original;
+    address                      public original = 0x5B5d8A8A732A3c73fF0fB6980880Ef399ecaf72E;
     uint                         public totalSupply;
     mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint value);
 
-    function ManualMigration(address _original) payable public owned() {
-        original = _original;
-    }
+    function ManualMigration() payable public owned() {}
 
     function migrateManual(address _who, bool _preico) public onlyOwner {
         require(original != 0);
@@ -110,8 +108,7 @@ contract Crowdsale is ManualMigration {
         _;
     }
 
-    function Crowdsale(address _original, address _backend, uint _etherPrice) public
-        payable ManualMigration(_original) {
+    function Crowdsale(address _backend, uint _etherPrice) public payable ManualMigration() {
         backend = _backend;
         etherPrice = _etherPrice;
     }
@@ -183,8 +180,8 @@ contract ProofToken is Crowdsale {
     event Approval(address indexed owner, address indexed spender, uint value);
     event Burn(address indexed owner, uint value);
 
-    function ProofToken( address _original, address _backend, uint _etherPrice) public
-        payable Crowdsale(_original, _backend, _etherPrice) {
+    function ProofToken(address _backend, uint _etherPrice) public
+        payable Crowdsale(_backend, _etherPrice) {
     }
 
     function transfer(address _to, uint256 _value) public onlyPayloadSize(2 * 32) {
