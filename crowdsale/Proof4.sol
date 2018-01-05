@@ -45,25 +45,21 @@ contract owned {
 }
 
 /**
- * @title ERC20 interface
+ * @title Base of ERC20 interface
  * @dev see https://github.com/ethereum/EIPs/issues/20
  */
-contract ERC20 {
-    uint public totalSupply;
+contract BaseERC20 {
     function balanceOf(address who) public constant returns (uint);
     function transfer(address to, uint value) public;
-    function allowance(address owner, address spender) public constant returns (uint);
-    function transferFrom(address from, address to, uint value) public;
-    function approve(address spender, uint value) public;
-    event Approval(address indexed owner, address indexed spender, uint value);
-    event Transfer(address indexed from, address indexed to, uint value);
 }
 
-contract ManualMigration is owned, ERC20 {
+contract ManualMigration is owned {
 
     address                      public original;
     uint                         public totalSupply;
     mapping (address => uint256) public balanceOf;
+
+    event Transfer(address indexed from, address indexed to, uint value);
 
     function ManualMigration(address _original) payable public owned() {
         original = _original;
@@ -72,7 +68,7 @@ contract ManualMigration is owned, ERC20 {
     function migrateManual(address _who, bool _preico) public onlyOwner {
         require(original != 0);
         require(balanceOf[_who] == 0);
-        uint balance = ERC20(original).balanceOf(_who);
+        uint balance = BaseERC20(original).balanceOf(_who);
         balance *= _preico ? 27 : 45;
         balance /= 100;
         balance *= 100000000;
@@ -101,7 +97,6 @@ contract Crowdsale is ManualMigration {
     uint    public etherPrice;
     uint    public collectedUSD;
 
-    event Transfer(address indexed from, address indexed to, uint value);
     event Mint(address indexed minter, uint tokens, bytes32 originalTxHash);
 
     // Fix for the ERC20 short address attack
@@ -172,8 +167,8 @@ contract Crowdsale is ManualMigration {
 
     function withdraw() public onlyOwner {
         require(msg.sender.call.gas(3000000).value(this.balance)());
-        uint balance = ERC20(cryptaurToken).balanceOf(this); 
-        ERC20(cryptaurToken).transfer(msg.sender, balance);
+        uint balance = BaseERC20(cryptaurToken).balanceOf(this); 
+        BaseERC20(cryptaurToken).transfer(msg.sender, balance);
     }
 }
 
@@ -192,8 +187,7 @@ contract ProofToken is Crowdsale {
         payable Crowdsale(_original, _backend, _etherPrice) {
     }
 
-    function transfer(address _to, uint256 _value)
-        public onlyPayloadSize(2 * 32) {
+    function transfer(address _to, uint256 _value) public onlyPayloadSize(2 * 32) {
         require(balanceOf[msg.sender] >= _value);
         require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
@@ -201,8 +195,7 @@ contract ProofToken is Crowdsale {
         Transfer(msg.sender, _to, _value);
     }
     
-    function transferFrom(address _from, address _to, uint _value)
-        public onlyPayloadSize(3 * 32) {
+    function transferFrom(address _from, address _to, uint _value) public onlyPayloadSize(3 * 32) {
         require(balanceOf[_from] >= _value);
         require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
         require(allowed[_from][msg.sender] >= _value);
@@ -217,8 +210,7 @@ contract ProofToken is Crowdsale {
         Approval(msg.sender, _spender, _value);
     }
 
-    function allowance(address _owner, address _spender) public constant
-        returns (uint remaining) {
+    function allowance(address _owner, address _spender) public constant returns (uint remaining) {
         return allowed[_owner][_spender];
     }
     
