@@ -59,6 +59,9 @@ contract ManualMigration is owned {
     uint                         public totalSupply;
     mapping (address => uint256) public balanceOf;
 
+    uint                         public numberOfInvestors;
+    mapping (address => bool)    public investors;
+
     event Transfer(address indexed from, address indexed to, uint value);
 
     function ManualMigration() payable public owned() {}
@@ -72,6 +75,10 @@ contract ManualMigration is owned {
         balance *= 100000000;
         balanceOf[_who] = balance;
         totalSupply += balance;
+        if (!investors[_who]) {
+            investors[_who] = true;
+            ++numberOfInvestors;
+        }
         Transfer(original, _who, balance);
     }
     
@@ -146,6 +153,10 @@ contract Crowdsale is ManualMigration {
         require(balanceOf[_who] + tokens > balanceOf[_who]); // overflow
         require(tokens > 0);
         balanceOf[_who] += tokens;
+        if (!investors[_who]) {
+            investors[_who] = true;
+            ++numberOfInvestors;
+        }
         Transfer(this, _who, tokens);
         totalSupply += tokens;
     }
@@ -158,6 +169,10 @@ contract Crowdsale is ManualMigration {
         require(tokens > 0);
         balanceOf[_who] += tokens;
         totalSupply += tokens;
+        if (!investors[_who]) {
+            investors[_who] = true;
+            ++numberOfInvestors;
+        }
         Transfer(this, _who, tokens);
         Mint(_who, tokens, _originalTxHash);
     }
