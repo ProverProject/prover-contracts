@@ -163,8 +163,7 @@ contract Crowdsale is ManualMigration {
 
     function depositCPT(address _who, uint _valueCPT, bytes32 _originalTxHash) public isCrowdsale {
         require(msg.sender == backend);
-        uint tokensPerCPT = 1;
-        uint tokens = tokensPerCPT * _valueCPT;
+        uint tokens = 15 * _valueCPT / 10;
         require(balanceOf[_who] + tokens > balanceOf[_who]); // overflow
         require(tokens > 0);
         balanceOf[_who] += tokens;
