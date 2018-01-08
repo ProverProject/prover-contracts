@@ -149,7 +149,7 @@ contract Crowdsale is ManualMigration {
         } else if (now < crowdsaleStartTime + 1 weeks) {
             tokensPerUSD = 110;
         }
-        uint tokens = tokensPerUSD * _valueUSD;
+        uint tokens = tokensPerUSD * _valueUSD * 100000000;
         require(balanceOf[_who] + tokens > balanceOf[_who]); // overflow
         require(tokens > 0);
         balanceOf[_who] += tokens;
@@ -163,6 +163,7 @@ contract Crowdsale is ManualMigration {
 
     function depositCPT(address _who, uint _valueCPT, bytes32 _originalTxHash) public isCrowdsale {
         require(msg.sender == backend);
+        // decimals in CPT and PROOF are the same and equal 8
         uint tokens = 15 * _valueCPT / 10;
         require(balanceOf[_who] + tokens > balanceOf[_who]); // overflow
         require(tokens > 0);
