@@ -24,7 +24,7 @@ contract owned {
     address public owner;
     address public candidate;
 
-    function owned() payable public {
+    function owned() public {
         owner = msg.sender;
     }
     
@@ -64,14 +64,14 @@ contract ManualMigration is owned {
 
     event Transfer(address indexed from, address indexed to, uint value);
 
-    function ManualMigration() payable public owned() {}
+    function ManualMigration() public owned() {}
 
     function migrateManual(address _who, bool _preico) public onlyOwner {
         require(original != 0);
         require(balanceOf[_who] == 0);
         uint balance = BaseERC20(original).balanceOf(_who);
         balance *= _preico ? 27 : 45;
-        balance /= 100;
+        balance /= 10;
         balance *= 100000000;
         balanceOf[_who] = balance;
         totalSupply += balance;
@@ -96,11 +96,12 @@ contract ManualMigration is owned {
 contract Crowdsale is ManualMigration {
 
     address public backend;
-    address public cryptaurToken = 0x827de8CB5bF8DA8f16093505C58b5677122CDceC;
+    address public cryptaurToken = 0x827de8CB5bF8DA8f16093505C58b5677122CDceC;!!! need change !!!
     uint    public crowdsaleStartTime = 1517270400;  // 30 January 2018, GMT 00:00:00
     uint    public crowdsaleFinishTime = 1522454400; // 31 March 2018, 00:00:00
     uint    public etherPrice;
     uint    public collectedUSD;
+    bool    public crowdsaleFinished;
 
     event Mint(address indexed minter, uint tokens, bytes32 originalTxHash);
 
@@ -115,7 +116,7 @@ contract Crowdsale is ManualMigration {
         _;
     }
 
-    function Crowdsale(address _backend, uint _etherPrice) public payable ManualMigration() {
+    function Crowdsale(address _backend, uint _etherPrice) public ManualMigration() {
         backend = _backend;
         etherPrice = _etherPrice;
     }
@@ -135,7 +136,8 @@ contract Crowdsale is ManualMigration {
         mintTokens(msg.sender, valueUSD);
     }
 
-    function depositUSD(address _who, uint _valueUSD) public onlyOwner isCrowdsale {
+    function depositUSD(address _who, uint _valueUSD) public isCrowdsale {
+        require(msg.sender == backend || msg.sender == owner);
         collectedUSD += _valueUSD;
         mintTokens(_who, _valueUSD);
     }
@@ -162,7 +164,7 @@ contract Crowdsale is ManualMigration {
     }
 
     function depositCPT(address _who, uint _valueCPT, bytes32 _originalTxHash) public isCrowdsale {
-        require(msg.sender == backend);
+        require(msg.sender == backend || msg.sender == owner);
         // decimals in CPT and PROOF are the same and equal 8
         uint tokens = 15 * _valueCPT / 10;
         require(balanceOf[_who] + tokens > balanceOf[_who]); // overflow
@@ -179,8 +181,21 @@ contract Crowdsale is ManualMigration {
 
     function withdraw() public onlyOwner {
         require(msg.sender.call.gas(3000000).value(this.balance)());
-        uint balance = BaseERC20(cryptaurToken).balanceOf(this); 
+        uint balance = BaseERC20(cryptaurToken).balanceOf(this);
         BaseERC20(cryptaurToken).transfer(msg.sender, balance);
+    }
+    
+    function finishCrowdsale() public onlyOwner {
+        require(now > crowdsaleFinishTime && !crowdsaleFinished);
+        uint extraTokens = totalSupply / 2;
+        balanceOf[msg.sender] += extraTokens;
+        totalSupply += extraTokens;
+        if (!investors[msg.sender]) {
+            investors[msg.sender] = true;
+            ++numberOfInvestors;
+        }
+        Transfer(this, _who, extraTokens);
+        crowdsaleFinished = true;
     }
 }
 
