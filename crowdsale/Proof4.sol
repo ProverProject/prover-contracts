@@ -96,7 +96,7 @@ contract ManualMigration is owned {
 contract Crowdsale is ManualMigration {
 
     address public backend;
-    address public cryptaurToken = 0x827de8CB5bF8DA8f16093505C58b5677122CDceC;!!! need change !!!
+    address public cryptaurToken = 0x88d50B466BE55222019D71F9E8fAe17f5f45FCA1;
     uint    public crowdsaleStartTime = 1517270400;  // 30 January 2018, GMT 00:00:00
     uint    public crowdsaleFinishTime = 1522454400; // 31 March 2018, 00:00:00
     uint    public etherPrice;
@@ -194,7 +194,7 @@ contract Crowdsale is ManualMigration {
             investors[msg.sender] = true;
             ++numberOfInvestors;
         }
-        Transfer(this, _who, extraTokens);
+        Transfer(this, msg.sender, extraTokens);
         crowdsaleFinished = true;
     }
 }
