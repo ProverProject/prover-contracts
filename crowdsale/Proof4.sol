@@ -171,6 +171,7 @@ contract Crowdsale is ManualMigration {
         require(tokens > 0);
         balanceOf[_who] += tokens;
         totalSupply += tokens;
+        collectedUSD += _valueCPT / 100;
         if (!investors[_who]) {
             investors[_who] = true;
             ++numberOfInvestors;
