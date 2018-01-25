@@ -187,7 +187,7 @@ contract Crowdsale is ManualMigration {
     }
     
     function finishCrowdsale() public onlyOwner {
-        require(now > crowdsaleFinishTime && !crowdsaleFinished);
+        require(!crowdsaleFinished);
         uint extraTokens = totalSupply / 2;
         balanceOf[msg.sender] += extraTokens;
         totalSupply += extraTokens;
