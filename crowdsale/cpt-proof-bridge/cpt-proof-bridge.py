@@ -1,6 +1,6 @@
 #! /usr/bin/env python2
 
-import sys, os, json
+import sys, os, json, time
 import database
 import config
 
@@ -88,6 +88,11 @@ for (blockNumber, logIndex, txhash, minter, amount) in database.getPendingTransf
             if e.message==(-32000, "authentication needed: password or unlock"):
                 walletrpc.personal_unlockAccount(config.config["depositCPT"]["caller"], config.config["depositCPT"]["password"])
                 txhash=walletrpc.eth_sendTransaction(txobject)
+            elif e.message==(-32000, "insufficient funds for gas * price + value"):
+                print "Insufficient funds"
+                database.markTransfers(selectedTransfers, 0)
+                time.sleep(60)
+                sys.exit(0)
             else:
                 raise
 
