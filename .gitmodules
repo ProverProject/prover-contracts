@@ -1,0 +1,3 @@
+[submodule "crowdsale/cpt-proof-bridge/jsonrpclib"]
+	path = crowdsale/cpt-proof-bridge/jsonrpclib
+	url = ../jsonrpclib
