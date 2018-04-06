@@ -4,3 +4,6 @@
 [submodule "crowdsale/setEtherPrice/jsonrpclib"]
 	path = crowdsale/setEtherPrice/jsonrpclib
 	url = ../jsonrpclib
+[submodule "crowdsale/distributeTokens/jsonrpclib"]
+	path = crowdsale/distributeTokens/jsonrpclib
+	url = ../jsonrpclib
