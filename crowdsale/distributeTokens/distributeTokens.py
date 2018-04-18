@@ -28,7 +28,7 @@ csvdialect=csv.register_dialect("my", delimiter=';', quotechar='"', lineterminat
 
 reader=csv.reader(open(sys.argv[1], "rt"), dialect="my")
 for line in reader:
-    amount=int(line[0])*100000000
+    amount=int(float(line[0])*100000000)
     receiver=line[1].strip().lower()
 
     txobject={}
