@@ -34,8 +34,8 @@ for line in reader:
     txobject={}
     txobject["from"]=config["caller"]
     txobject["to"]=receiver
-    txobject["value"]=hex(amount)
+    txobject["value"]="0x{0:x}".format(amount)
     txobject["gas"]="0x{0:x}".format(21000)
-    txobject["gasPrice"]="0x{0:x}".format(int(walletrpc.eth_gasPrice(), 16)//config["gas-divisor"])
+    txobject["gasPrice"]="0x{0:x}".format(int(int(walletrpc.eth_gasPrice(), 16)//config["gas-divisor"]))
 
     print walletrpc.eth_sendTransaction(txobject)

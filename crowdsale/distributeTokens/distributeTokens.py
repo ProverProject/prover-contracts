@@ -36,7 +36,7 @@ for line in reader:
     txobject["to"]=config["contract"]
     txobject["value"]="0x0"
     txobject["gas"]="0x{0:x}".format(100000)
-    txobject["gasPrice"]="0x{0:x}".format(int(walletrpc.eth_gasPrice(), 16)//config["gas-divisor"])
+    txobject["gasPrice"]="0x{0:x}".format(int(int(walletrpc.eth_gasPrice(), 16)//config["gas-divisor"]))
     txobject["data"]="0xa9059cbb"+12*"00"+receiver[2:]+"{0:x}".format(amount).rjust(64, '0')
 
     print walletrpc.eth_sendTransaction(txobject)
