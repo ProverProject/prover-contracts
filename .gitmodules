@@ -7,3 +7,6 @@
 [submodule "crowdsale/distributeTokens/jsonrpclib"]
 	path = crowdsale/distributeTokens/jsonrpclib
 	url = ../jsonrpclib
+[submodule "crowdsale/distributeEther/jsonrpclib"]
+	path = crowdsale/distributeEther/jsonrpclib
+	url = ../jsonrpclib
