@@ -18,12 +18,12 @@ def choice(m, n, bignum):
 
     return r
 
+if __name__=="__main__":
+    if len(sys.argv)<4:
+        sys.exit("Usage: {0} M N HASH\nIt deterministically produces M distinct numbers from [0;N] using HASH as seed\n".format(sys.argv[0]))
 
-if len(sys.argv)<4:
-    sys.exit("Usage: {0} M N HASH\nIt deterministically produces M distinct numbers from [0;N] using HASH as seed\n".format(sys.argv[0]))
+    m=int(sys.argv[1])
+    n=int(sys.argv[2])
+    h=int("0x"+sys.argv[3], 16)
 
-m=int(sys.argv[1])
-n=int(sys.argv[2])
-h=int("0x"+sys.argv[3], 16)
-
-print(choice(m, n, h))
+    print(choice(m, n, h))
